@@ -1,6 +1,5 @@
 ﻿@page "/"
 
-
 @inject IUserProvider UserProvider
 @inject ISnackbar Toaster
 
@@ -8,8 +7,11 @@
 
 <DefaultLayout>
     <Actions>
-        <MudTooltip Text="Hinzufügen">
-            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickAdd" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
+        <MudTooltip Text="Einstempeln">
+            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickStartTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
+        </MudTooltip>
+        <MudTooltip Text="Ausstempeln">
+            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Ausstempeln</MudButton>
         </MudTooltip>
     </Actions>
     <Content>
@@ -55,16 +57,23 @@
         alluserinfos = await UserProvider.GetAllUserInfos();
     }
 
-    private void OnClickAdd()
+    private void OnClickStartTimeBooking()
     {
-        
+
+    }
+
+    private void OnClickEndTimeBooking()
+    {
+
     }
 
     private void OnClickEdit(object contextItem)
     {
+
     }
 
     private void OnDeleteArchiv(object contextItem)
     {
+        
     }
 }

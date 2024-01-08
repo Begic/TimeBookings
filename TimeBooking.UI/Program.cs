@@ -14,6 +14,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices(conf => conf.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
 
 builder.Services.AddTransient<IUserProvider, UserProvider>();
+builder.Services.AddTransient<ITimeBookingProvider, TimeBookingProvider>();
 
 builder.Services.AddDbContextFactory<DataBaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
