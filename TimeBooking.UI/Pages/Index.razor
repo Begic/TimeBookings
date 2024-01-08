@@ -1,9 +1,70 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
 
+@inject IUserProvider UserProvider
+@inject ISnackbar Toaster
+
+<PageTitle>Übersicht</PageTitle>
+
+<DefaultLayout>
+    <Actions>
+        <MudTooltip Text="Hinzufügen">
+            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickAdd" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
+        </MudTooltip>
+    </Actions>
+    <Content>
+        @if (alluserinfos.Count != 0)
+        {
+            @* <MudDataGrid Items="@allPasswordInfos"
+                         RowsPerPage="10"
+                         Dense="true"
+                         Striped="true"
+                         Hover="true"
+                         Virtualize="true">
+                <Columns>
+                    <PropertyColumn Title="Titel" Property="x => x.Title" />
+              
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudStack Row>
+                            <MudTooltip Text="Bearbeiten">
+                                <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)" />
+                            </MudTooltip>
+                            <MudTooltip Text="Löschen">
+                                <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDeleteArchiv(context.Item)" />
+                            </MudTooltip>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid> *@
+        }
+        else
+        {
+            <MudText Style="text-align: center" Typo="Typo.h5">Keine Daten..</MudText>
+        }
+    </Content>
+</DefaultLayout>
 
 @code
 {
+    private List<UserInfo> alluserinfos;
 
+    protected override async Task OnInitializedAsync()
+    {
+        alluserinfos = await UserProvider.GetAllUserInfos();
+    }
+
+    private void OnClickAdd()
+    {
+        
+    }
+
+    private void OnClickEdit(object contextItem)
+    {
+    }
+
+    private void OnDeleteArchiv(object contextItem)
+    {
+    }
 }

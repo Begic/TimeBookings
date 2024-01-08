@@ -1,0 +1,33 @@
+﻿@inject ISnackbar Toaster
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.subtitle1">Sind Sie sicher das Sie diesen Datensatz löschen wollen?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudTooltip Text="NEIN">
+            <MudButton Color="Color.Error" ButtonType="ButtonType.Button" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">NEIN</MudButton>
+        </MudTooltip>
+        <MudTooltip Text="JA">
+            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Check" OnClick="OnClickOk">JA</MudButton>
+        </MudTooltip>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    private async Task OnClickOk()
+    {
+        MudDialog.Close(true);
+        Toaster.Add("Erfolgreich gelöscht", MudBlazor.Severity.Success);
+    }
+
+    private async Task OnClickCancel()
+    {
+        MudDialog.Close(false);
+        Toaster.Add("Abgebrochen", MudBlazor.Severity.Error);
+    }
+}

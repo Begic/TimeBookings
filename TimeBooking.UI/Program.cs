@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
 using TimeBooking.Db;
+using TimeBooking.Db.Contracts;
+using TimeBooking.Db.Providers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +13,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddMudServices(conf => conf.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
 
-//builder.Services.AddTransient<IDataProvider, DataProvider>();
+builder.Services.AddTransient<IUserProvider, UserProvider>();
 
 builder.Services.AddDbContextFactory<DataBaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

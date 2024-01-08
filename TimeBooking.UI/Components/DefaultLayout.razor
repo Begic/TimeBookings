@@ -1,0 +1,27 @@
+﻿<MudCard Elevation="25">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <div class="justify-end">
+                @Actions
+            </div>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @Content
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [Parameter] 
+    public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment Actions { get; set; }
+
+    [Parameter]
+    public RenderFragment Content { get; set; }
+}
