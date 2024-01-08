@@ -1,16 +1,28 @@
+using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 using MudBlazor.Services;
+using TimeBooking.Db;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddMudServices();
 
-//builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddMudServices(conf => conf.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
 
+//builder.Services.AddTransient<IDataProvider, DataProvider>();
+
+builder.Services.AddDbContextFactory<DataBaseContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+using (var db = scope.ServiceProvider.GetService<IDbContextFactory<DataBaseContext>>().CreateDbContext())
+{
+    db.Database.Migrate();
+}
 
 if (!app.Environment.IsDevelopment())
 {
