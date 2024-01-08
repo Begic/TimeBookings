@@ -1,6 +1,6 @@
 ﻿namespace TimeBooking.Db
 {
-    public class Class1
+    public class DataBaseContext
     {
 
     }
