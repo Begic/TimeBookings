@@ -9,12 +9,7 @@ public class DataBaseContext : DbContext
     private readonly IConfiguration config;
 
     public DbSet<User> Users { get; set; }
-
-    public DataBaseContext()
-    {
-        
-    }
-
+    
     public DataBaseContext(DbContextOptions<DataBaseContext> options, IConfiguration config) : base(options)
     {
         this.config = config;

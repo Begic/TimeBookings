@@ -2,5 +2,5 @@
 
 public interface ITimeBookingProvider
 {
-
+    Task<object> GetAllTimeBookings();
 }

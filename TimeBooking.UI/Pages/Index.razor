@@ -1,79 +1,82 @@
 ﻿@page "/"
 
 @inject IUserProvider UserProvider
+@inject ITimeBookingProvider TimeBookingProvider
 @inject ISnackbar Toaster
 
 <PageTitle>Übersicht</PageTitle>
 
-<DefaultLayout>
-    <Actions>
-        <MudTooltip Text="Einstempeln">
-            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickStartTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
-        </MudTooltip>
-        <MudTooltip Text="Ausstempeln">
-            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Ausstempeln</MudButton>
-        </MudTooltip>
-    </Actions>
-    <Content>
-        @if (alluserinfos.Count != 0)
-        {
-            @* <MudDataGrid Items="@allPasswordInfos"
+<LoadingPage IsLoading="@(alluserinfos == null)">
+    <DefaultLayout Title="Übersicht">
+        <Actions>
+            <MudTooltip Text="Einstempeln">
+                <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickStartTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
+            </MudTooltip>
+            <MudTooltip Text="Ausstempeln">
+                <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Ausstempeln</MudButton>
+            </MudTooltip>
+        </Actions>
+        <Content>
+            <MudDataGrid Items="@ka"
                          RowsPerPage="10"
                          Dense="true"
                          Striped="true"
                          Hover="true"
                          Virtualize="true">
                 <Columns>
-                    <PropertyColumn Title="Titel" Property="x => x.Title" />
-              
+                    <PropertyColumn Title="Titel" Property="x => x.Title"/>
+
                     <TemplateColumn>
                         <CellTemplate>
                             <MudStack Row>
-                            <MudTooltip Text="Bearbeiten">
-                                <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)" />
-                            </MudTooltip>
-                            <MudTooltip Text="Löschen">
-                                <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDeleteArchiv(context.Item)" />
-                            </MudTooltip>
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-        </MudDataGrid> *@
-        }
-        else
-        {
-            <MudText Style="text-align: center" Typo="Typo.h5">Keine Daten..</MudText>
-        }
-    </Content>
-</DefaultLayout>
+                                <MudTooltip Text="Bearbeiten">
+                                    <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)"/>
+                                </MudTooltip>
+                                <MudTooltip Text="Löschen">
+                                    <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDeleteArchiv(context.Item)"/>
+                                </MudTooltip>
+                            </MudStack>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        </Content>
+    </DefaultLayout>
+</LoadingPage>
+
 
 @code
 {
     private List<UserInfo> alluserinfos;
+    private UserInfo currentUser;
 
     protected override async Task OnInitializedAsync()
     {
         alluserinfos = await UserProvider.GetAllUserInfos();
+        currentUser = alluserinfos.FirstOrDefault();
+
+        await LoadTimeBookings();
+    }
+
+    private async Task LoadTimeBookings()
+    {
+        var ka = await TimeBookingProvider.GetAllTimeBookings();
     }
 
     private void OnClickStartTimeBooking()
     {
-
     }
 
     private void OnClickEndTimeBooking()
     {
-
     }
 
     private void OnClickEdit(object contextItem)
     {
-
     }
 
-    private void OnDeleteArchiv(object contextItem)
+    private void OnDelete(object contextItem)
     {
-        
     }
+
 }

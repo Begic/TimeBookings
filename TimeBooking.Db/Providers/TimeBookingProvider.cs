@@ -12,4 +12,10 @@ public class TimeBookingProvider : ITimeBookingProvider
         this.factory = factory;
     }
 
+    public async Task<object> GetAllTimeBookings()
+    {
+        await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
+
+        return null;
+    }
 }
