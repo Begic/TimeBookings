@@ -9,4 +9,6 @@ public class User
     [MaxLength(200)] public string LastName { get; set; }
     public DateTime Birthday { get; set; }
     [MaxLength(200)] public string Email { get; set; }
+
+    public List<TimeBookingDay> TimeBookingDays { get; set; } = new();
 }

@@ -5,7 +5,6 @@ using TimeBooking.Db;
 using TimeBooking.Db.Contracts;
 using TimeBooking.Db.Providers;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
