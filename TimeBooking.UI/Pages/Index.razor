@@ -1,6 +1,6 @@
 ﻿@page "/"
-@using System.Security
 
+@inject IDialogService DialogService
 @inject IUserProvider UserProvider
 @inject ITimeBookingProvider TimeBookingProvider
 @inject ISnackbar Toaster
@@ -11,10 +11,11 @@
     <DefaultLayout Title="Übersicht">
         <Actions>
             <MudTooltip Text="Einstempeln">
-                <MudButton Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickStartTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
+                <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
             </MudTooltip>
+
             <MudTooltip Text="Ausstempeln">
-                <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.AddCircle">Ausstempeln</MudButton>
+                <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
             </MudTooltip>
         </Actions>
         <Content>
@@ -31,10 +32,10 @@
                         <CellTemplate>
                             <MudStack Row>
                                 <MudTooltip Text="Bearbeiten">
-                                    <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)"/>
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)"/>
                                 </MudTooltip>
                                 <MudTooltip Text="Löschen">
-                                    <MudFab Size="Size.Small" IconSize="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(context.Item)"/>
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(context.Item)"/>
                                 </MudTooltip>
                             </MudStack>
                         </CellTemplate>
@@ -48,16 +49,34 @@
 
 @code
 {
+    private DialogOptions options = new DialogOptions
+    {
+        DisableBackdropClick = true,
+        Position = DialogPosition.Center,
+        CloseButton = false,
+        CloseOnEscapeKey = false,
+        FullWidth = true,
+        MaxWidth = MaxWidth.Medium
+    };
+    
     private List<UserInfo> alluserinfos;
     private UserInfo? currentUser;
     private List<TimeBookingDayInfo> allTimeBookings;
+    private bool hasNoBookingToday;
 
     protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    private async Task Refresh()
     {
         alluserinfos = await UserProvider.GetAllUserInfos();
         currentUser = alluserinfos.FirstOrDefault();
 
         await LoadTimeBookings();
+
+        StateHasChanged();
     }
 
     private async Task LoadTimeBookings()
@@ -67,22 +86,37 @@
         {
             allTimeBookings = allTimeBookings.Where(x => x.UserId == currentUser.Id).ToList();
         }
+        hasNoBookingToday = !allTimeBookings.Any(x => x.BookingDay.Day == DateTime.Today.Day);
     }
 
-    private void OnClickStartTimeBooking()
+    private async Task OnClickAddTimeBookingDay()
+    {
+        await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
+        {
+            {nameof(DialogBooking.CurrentUser), currentUser},
+        }, options);
+
+        await Refresh();
+    }
+
+    private async Task OnClickEndTimeBooking()
     {
     }
 
-    private void OnClickEndTimeBooking()
+    private async Task OnClickEdit(TimeBookingDayInfo? item)
     {
+        await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
+        {
+            {nameof(DialogBooking.CurrentUser), currentUser},
+            {nameof(DialogBooking.TimeBookingDay), item},
+        }, options);
+
+        await Refresh();
     }
 
-    private void OnClickEdit(TimeBookingDayInfo? contextItem)
+    private async Task OnDelete(TimeBookingDayInfo? item)
     {
+        
+        
     }
-
-    private void OnDelete(TimeBookingDayInfo? contextItem)
-    {
-    }
-
 }

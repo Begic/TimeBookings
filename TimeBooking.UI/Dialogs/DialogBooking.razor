@@ -1,0 +1,62 @@
+﻿@inject ITimeBookingProvider TimeBookingProvider
+@inject ISnackbar Toaster
+
+<MudDialog>
+    <TitleContent>
+            @if (TimeBookingDay == null)
+            {  
+                <MudText>Zeitbuchung hinzufügen</MudText>
+            }
+            else
+            {
+                <MudText>Zeitbuchung bearbeiten</MudText>
+            }
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@editModel" OnValidSubmit="@AddTimeBooking">
+            <MudGrid>
+                <MudItem md="12">
+                    <MudTextField Label="Kommentar" @bind-Value="@editModel.Remark" Lines="3"></MudTextField>
+                    
+                    @if (TimeBookingDay != null)
+                    {
+                        
+                    }
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
+        <MudButton Color="@Color.Info" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code
+{
+    [Parameter] public UserInfo CurrentUser { get; set; }
+    [Parameter] public TimeBookingDayInfo? TimeBookingDay { get; set; }
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private EditTimeBookingDay editModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private async Task AddTimeBooking(EditContext obj)
+    {
+        
+        Toaster.Add("Erfolgreich hinzugefügt", Severity.Info);
+        MudDialog.Close();
+    }
+
+    private async Task OnClickCancel(MouseEventArgs obj)
+    {
+        Toaster.Add("Erfolgreich abgebrochen", Severity.Info);
+        MudDialog.Close();
+    }
+}
