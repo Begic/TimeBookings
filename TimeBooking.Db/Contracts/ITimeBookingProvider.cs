@@ -1,6 +1,8 @@
-﻿namespace TimeBooking.Db.Contracts;
+﻿using TimeBooking.Db.Models;
+
+namespace TimeBooking.Db.Contracts;
 
 public interface ITimeBookingProvider
 {
-    Task<object> GetAllTimeBookings();
+    Task<List<TimeBookingDayInfo>> GetAllTimeBookings();
 }
