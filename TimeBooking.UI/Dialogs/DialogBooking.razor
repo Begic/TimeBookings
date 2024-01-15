@@ -66,7 +66,7 @@
     {
         await TimeBookingProvider.AddTimeBookingDay(CurrentUser, editModel);
         Toaster.Add("Erfolgreich hinzugefügt", Severity.Info);
-        MudDialog.Close();
+        MudDialog.Close(true);
     }
 
     private async Task OnClickCancel()

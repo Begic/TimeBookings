@@ -56,6 +56,16 @@ public class TimeBookingProvider : ITimeBookingProvider
         await db.SaveChangesAsync();
     }
 
+    public async Task StampOut()
+    {
+        await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
+        var toStampOut = await db.TimeBookingDays
+            .Include(x=> x.TimeBookingDetails)
+            .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
+        
+        
+    }
+
     public async Task DeleteTimeBookingDay(int id)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);

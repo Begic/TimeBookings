@@ -16,10 +16,12 @@
                     <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
                 </MudTooltip>
             }
-
-            <MudTooltip Text="Ausstempeln">
-                <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
-            </MudTooltip>
+            else
+            {
+                <MudTooltip Text="Ausstempeln">
+                    <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
+                </MudTooltip>
+            }
         </Actions>
         <Content>
             <MudDataGrid Items="@allTimeBookings"
@@ -29,16 +31,16 @@
                          Hover="@true"
                          Virtualize="@true">
                 <Columns>
-                    <PropertyColumn Title="Tag" Property="@(x => x.BookingDay)" />
-                    <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)" />
+                    <PropertyColumn Title="Tag" Property="@(x => x.BookingDay)" Format="d"/>
+                    <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)"/>
                     <TemplateColumn>
                         <CellTemplate>
                             <MudStack Row>
                                 <MudTooltip Text="Bearbeiten">
-                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)" />
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)"/>
                                 </MudTooltip>
                                 <MudTooltip Text="Löschen">
-                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(context.Item)" />
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(context.Item)"/>
                                 </MudTooltip>
                             </MudStack>
                         </CellTemplate>
@@ -100,21 +102,27 @@
             { nameof(DialogBooking.CurrentUser), currentUser },
         }, options);
 
+        var ka = await result.Result;
         await Refresh();
     }
 
     private async Task OnClickEndTimeBooking()
     {
+        await TimeBookingProvider.StampOut();
+        Toaster.Add("Erfolgreich ausgestempelt", Severity.Info);
+
+        await Refresh();
     }
 
     private async Task OnClickEdit(TimeBookingDayInfo? item)
     {
-        await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
+        var result = await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
         {
             { nameof(DialogBooking.CurrentUser), currentUser },
             { nameof(DialogBooking.TimeBookingDay), item },
         }, options);
 
+        var ka = await result.Result;
         await Refresh();
     }
 

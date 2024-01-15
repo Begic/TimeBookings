@@ -8,4 +8,5 @@ public interface ITimeBookingProvider
     Task AddTimeBookingDay(UserInfo? currentUser, EditTimeBookingDay editModel);
 
     Task DeleteTimeBookingDay(int id);
+    Task StampOut();
 }
