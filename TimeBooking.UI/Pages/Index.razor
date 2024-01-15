@@ -10,10 +10,13 @@
 <LoadingPage IsLoading="@(alluserinfos == null || allTimeBookings == null)">
     <DefaultLayout Title="Übersicht">
         <Actions>
-            <MudTooltip Text="Einstempeln">
-                <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
-            </MudTooltip>
-
+            @if (hasBookingToday)
+            {
+                <MudTooltip Text="Einstempeln">
+                    <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
+                </MudTooltip>
+            }
+            
             <MudTooltip Text="Ausstempeln">
                 <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
             </MudTooltip>
@@ -52,7 +55,7 @@
     private List<UserInfo> alluserinfos;
     private UserInfo? currentUser;
     private List<TimeBookingDayInfo> allTimeBookings;
-    private bool hasNoBookingToday;
+    private bool hasBookingToday;
 
     private DialogOptions options = new DialogOptions
     {
@@ -63,7 +66,7 @@
         FullWidth = true,
         MaxWidth = MaxWidth.Medium
     };
-    
+
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
@@ -86,14 +89,15 @@
         {
             allTimeBookings = allTimeBookings.Where(x => x.UserId == currentUser.Id).ToList();
         }
-        hasNoBookingToday = !allTimeBookings.Any(x => x.BookingDay.Day == DateTime.Today.Day);
+
+        hasBookingToday = !allTimeBookings.Any(x => x.BookingDay.Day == DateTime.Today.Day);
     }
 
     private async Task OnClickAddTimeBookingDay()
     {
-        await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
+        var result = await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
         {
-            {nameof(DialogBooking.CurrentUser), currentUser},
+            { nameof(DialogBooking.CurrentUser), currentUser },
         }, options);
 
         await Refresh();
@@ -107,8 +111,8 @@
     {
         await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
         {
-            {nameof(DialogBooking.CurrentUser), currentUser},
-            {nameof(DialogBooking.TimeBookingDay), item},
+            { nameof(DialogBooking.CurrentUser), currentUser },
+            { nameof(DialogBooking.TimeBookingDay), item },
         }, options);
 
         await Refresh();
@@ -116,7 +120,5 @@
 
     private async Task OnDelete(TimeBookingDayInfo? item)
     {
-        
-        
     }
 }
