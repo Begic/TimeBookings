@@ -15,6 +15,7 @@ builder.Services.AddMudServices(conf => conf.SnackbarConfiguration.PositionClass
 
 builder.Services.AddTransient<IUserProvider, UserProvider>();
 builder.Services.AddTransient<ITimeBookingProvider, TimeBookingProvider>();
+builder.Services.AddTransient<ITimeBookingDetailProvider, TimeBookingDetailProvider>();
 
 builder.Services.AddDbContextFactory<DataBaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -15,21 +15,53 @@
             }
         </TitleContent>
         <DialogContent>
-            <MudGrid>
+            <MudGrid Class="mb-6">
+                <MudItem md="3">
+                    <MudDatePicker Disabled="@true" Label="Tag" @bind-Date="@editModel.BookingDay"/>
+                </MudItem>
                 <MudItem md="12">
                     <MudTextField Label="Kommentar" @bind-Value="@editModel.Remark" For="@(() => editModel.Remark)" Lines="3"></MudTextField>
                 </MudItem>
 
                 @if (TimeBookingDay != null)
                 {
-                    <MudItem md="6">
-
-                    </MudItem>
-
                     <MudItem md="12">
-                        <MudGrid >
-
-                        </MudGrid>
+                        <DefaultLayout>
+                            <Actions>
+                                <MudTooltip Text="Einstempeln">
+                                    <MudFab Class="me-2" Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Success" StartIcon="@Icons.Material.Filled.AddCircle" OnClick="@OnClickStampIn">Einstempeln</MudFab>
+                                </MudTooltip>
+                                <MudTooltip Text="Ausstempeln">
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Info"  StartIcon="@Icons.Material.Filled.Square" OnClick="@OnClickStampOut">Ausstempeln</MudFab>
+                                </MudTooltip>
+                            </Actions>
+                            <Content>
+                                <MudDataGrid Items="@editModel.TimeBookingDetails"
+                                             RowsPerPage="10"
+                                             Dense="@true"
+                                             Striped="@true"
+                                             Hover="@true"
+                                             Virtualize="@true">
+                                    <Columns>
+                                        <PropertyColumn Title="Start" Property="@(x => x.StartTime)" Format="d"/>
+                                        <PropertyColumn Title="Ende" Property="@(x => x.EndTime)"/>
+                                        <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)"/>
+                                        <TemplateColumn >
+                                            <CellTemplate Context="edit">
+                                                <MudStack Row>
+                                                    <MudTooltip Text="Bearbeiten">
+                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(edit.Item)"/>
+                                                    </MudTooltip>
+                                                    <MudTooltip Text="Löschen">
+                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(edit.Item)"/>
+                                                    </MudTooltip>
+                                                </MudStack>
+                                            </CellTemplate>
+                                        </TemplateColumn>
+                                    </Columns>
+                                </MudDataGrid>
+                            </Content>
+                        </DefaultLayout>
                     </MudItem>
                 }
             </MudGrid>
@@ -57,7 +89,21 @@
         {
             editModel = new EditTimeBookingDay()
             {
-                Remark = TimeBookingDay.Remark
+                BookingDay = TimeBookingDay.BookingDay,
+                Remark = TimeBookingDay.Remark,
+                TimeBookingDetails = TimeBookingDay.TimeBookingDetails.Select(x => new EditTimeBookingDetail()
+                {
+                    StartTime = x.StartTime,
+                    EndTime = x.EndTime,
+                    Remark = x.Remark
+                }).ToList()
+            };
+        }
+        else
+        {
+            editModel = new EditTimeBookingDay
+            {
+                BookingDay = DateTime.Today,
             };
         }
     }
@@ -65,7 +111,7 @@
     private async Task AddTimeBooking()
     {
         await TimeBookingProvider.AddTimeBookingDay(CurrentUser, editModel);
-        Toaster.Add("Erfolgreich hinzugefügt", Severity.Info);
+        Toaster.Add("Erfolgreich hinzugefügt", Severity.Success);
         MudDialog.Close(true);
     }
 
@@ -73,5 +119,25 @@
     {
         Toaster.Add("Erfolgreich abgebrochen", Severity.Info);
         MudDialog.Close();
+    }
+
+    private async Task OnClickEdit(EditTimeBookingDetail? info)
+    {
+        
+    }
+
+    private async Task OnDelete(EditTimeBookingDetail? info)
+    {
+        
+    }
+
+    private async Task OnClickStampIn()
+    {
+        
+    }
+    
+    private async Task OnClickStampOut()
+    {
+        
     }
 }
