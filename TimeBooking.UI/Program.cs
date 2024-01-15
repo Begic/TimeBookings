@@ -24,9 +24,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 using (var db = scope.ServiceProvider.GetService<IDbContextFactory<DataBaseContext>>().CreateDbContext())
 {
+    await db.Database.MigrateAsync();
     if (!db.Users.Any())
     {
-        db.Users.Add(new User
+        await db.Users.AddAsync(new User
         {
             FirstName = "John",
             LastName = "Wick",
@@ -34,7 +35,7 @@ using (var db = scope.ServiceProvider.GetService<IDbContextFactory<DataBaseConte
             Email = "JohnWick@gmail.com"
         });
     }
-    db.Database.Migrate();
+    await db.SaveChangesAsync();
 }
 if (!app.Environment.IsDevelopment())
 {
