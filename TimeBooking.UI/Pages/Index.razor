@@ -16,7 +16,7 @@
                     <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.AddCircle">Einstempeln</MudButton>
                 </MudTooltip>
             }
-            
+
             <MudTooltip Text="Ausstempeln">
                 <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
             </MudTooltip>
@@ -58,14 +58,14 @@
     private bool hasBookingToday;
 
     private DialogOptions options = new DialogOptions
-    {
-        DisableBackdropClick = true,
-        Position = DialogPosition.Center,
-        CloseButton = false,
-        CloseOnEscapeKey = false,
-        FullWidth = true,
-        MaxWidth = MaxWidth.Medium
-    };
+        {
+            DisableBackdropClick = true,
+            Position = DialogPosition.Center,
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            FullWidth = true,
+            MaxWidth = MaxWidth.Medium
+        };
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,16 +120,20 @@
 
     private async Task OnDelete(TimeBookingDayInfo? item)
     {
-        var result = await DialogService.ShowAsync<DialogDelete>("Achtung!", new DialogParameters(), new DialogOptions
-            {
-                CloseOnEscapeKey = false, DisableBackdropClick = true
-    });
 
-        if ((bool)(await result.Result).Data)
         {
-            
+            var result = await DialogService.ShowAsync<DialogDelete>("Achtung!", new DialogParameters(), new DialogOptions
+                {
+                    CloseOnEscapeKey = false,
+                    DisableBackdropClick = true
+                });
+
+            if ((bool)(await result.Result).Data)
+            {
+                await TimeBookingProvider.DeleteTimeBookingDay(item.Id);
+                Toaster.Add("Erfolgreich gelöscht", Severity.Info);
+                await Refresh();
+            }
         }
-
-
     }
 }

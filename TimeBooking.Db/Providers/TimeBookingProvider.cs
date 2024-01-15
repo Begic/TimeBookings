@@ -55,4 +55,12 @@ public class TimeBookingProvider : ITimeBookingProvider
 
         await db.SaveChangesAsync();
     }
+
+    public async Task DeleteTimeBookingDay(int id)
+    {
+        await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
+        var doDelete = await db.TimeBookingDays.FirstOrDefaultAsync(x=> x.Id == id).ConfigureAwait(false);
+        db.TimeBookingDays.Remove(doDelete);
+        await db.SaveChangesAsync();
+    }
 }

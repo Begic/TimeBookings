@@ -6,4 +6,6 @@ public interface ITimeBookingProvider
 {
     Task<List<TimeBookingDayInfo>> GetAllTimeBookings();
     Task AddTimeBookingDay(UserInfo? currentUser, EditTimeBookingDay editModel);
+
+    Task DeleteTimeBookingDay(int id);
 }
