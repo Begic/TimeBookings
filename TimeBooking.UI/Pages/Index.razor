@@ -49,6 +49,11 @@
 
 @code
 {
+    private List<UserInfo> alluserinfos;
+    private UserInfo? currentUser;
+    private List<TimeBookingDayInfo> allTimeBookings;
+    private bool hasNoBookingToday;
+
     private DialogOptions options = new DialogOptions
     {
         DisableBackdropClick = true,
@@ -59,11 +64,6 @@
         MaxWidth = MaxWidth.Medium
     };
     
-    private List<UserInfo> alluserinfos;
-    private UserInfo? currentUser;
-    private List<TimeBookingDayInfo> allTimeBookings;
-    private bool hasNoBookingToday;
-
     protected override async Task OnInitializedAsync()
     {
         await Refresh();

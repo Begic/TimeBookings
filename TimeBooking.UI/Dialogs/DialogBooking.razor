@@ -1,37 +1,46 @@
 ﻿@inject ITimeBookingProvider TimeBookingProvider
 @inject ISnackbar Toaster
 
-<MudDialog>
-    <TitleContent>
+<EditForm Model="@editModel" OnValidSubmit="@AddTimeBooking">
+    <FluentValidationValidator/>
+    <MudDialog>
+        <TitleContent>
             @if (TimeBookingDay == null)
-            {  
+            {
                 <MudText>Zeitbuchung hinzufügen</MudText>
             }
             else
             {
                 <MudText>Zeitbuchung bearbeiten</MudText>
             }
-    </TitleContent>
-    <DialogContent>
-        <EditForm Model="@editModel" OnValidSubmit="@AddTimeBooking">
+        </TitleContent>
+        <DialogContent>
             <MudGrid>
                 <MudItem md="12">
-                    <MudTextField Label="Kommentar" @bind-Value="@editModel.Remark" Lines="3"></MudTextField>
-                    
-                    @if (TimeBookingDay != null)
-                    {
-                        
-                    }
+                    <MudTextField Label="Kommentar" @bind-Value="@editModel.Remark" For="@(() => editModel.Remark)" Lines="3"></MudTextField>
                 </MudItem>
-            </MudGrid>
-        </EditForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
-        <MudButton Color="@Color.Info" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
-    </DialogActions>
-</MudDialog>
 
+                @if (TimeBookingDay != null)
+                {
+                    <MudItem md="6">
+
+                    </MudItem>
+
+                    <MudItem md="12">
+                        <MudGrid >
+
+                        </MudGrid>
+                    </MudItem>
+                }
+            </MudGrid>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
+            <MudButton Color="@Color.Info" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
 
 @code
 {
@@ -44,17 +53,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
+        if (TimeBookingDay != null)
+        {
+        }
     }
 
-    private async Task AddTimeBooking(EditContext obj)
+    private async Task AddTimeBooking()
     {
-        
+        await TimeBookingProvider.AddTimeBookingDay(CurrentUser, editModel);
         Toaster.Add("Erfolgreich hinzugefügt", Severity.Info);
         MudDialog.Close();
     }
 
-    private async Task OnClickCancel(MouseEventArgs obj)
+    private async Task OnClickCancel()
     {
         Toaster.Add("Erfolgreich abgebrochen", Severity.Info);
         MudDialog.Close();

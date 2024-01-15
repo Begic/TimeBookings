@@ -12,5 +12,5 @@ public class TimeBookingDetail
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
 
-    [MaxLength(2000)] public string Remark { get; set; }
+    [MaxLength(2000)] public string? Remark { get; set; }
 }

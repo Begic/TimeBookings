@@ -36,14 +36,14 @@ public class TimeBookingProvider : ITimeBookingProvider
         return result;
     }
 
-    public async Task AddTimeBookingDay(UserInfo? currentUser)
+    public async Task AddTimeBookingDay(UserInfo? currentUser, EditTimeBookingDay editModel)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
         await db.TimeBookingDays.AddAsync(new TimeBookingDay
         {
             BookingDay = DateTime.Today,
             UserId = currentUser.Id,
-            Remark = string.Empty,
+            Remark = editModel.Remark,
             TimeBookingDetails = new List<TimeBookingDetail>(new []
             {
                 new TimeBookingDetail
