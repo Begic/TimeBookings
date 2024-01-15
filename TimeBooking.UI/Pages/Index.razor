@@ -26,16 +26,16 @@
                          Hover="@true"
                          Virtualize="@true">
                 <Columns>
-                    <PropertyColumn Title="Tag" Property="@(x => x.BookingDay)"/>
-                    <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)"/>
+                    <PropertyColumn Title="Tag" Property="@(x => x.BookingDay)" />
+                    <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)" />
                     <TemplateColumn>
                         <CellTemplate>
                             <MudStack Row>
                                 <MudTooltip Text="Bearbeiten">
-                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)"/>
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(context.Item)" />
                                 </MudTooltip>
                                 <MudTooltip Text="Löschen">
-                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(context.Item)"/>
+                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(context.Item)" />
                                 </MudTooltip>
                             </MudStack>
                         </CellTemplate>
@@ -55,15 +55,15 @@
     private bool hasNoBookingToday;
 
     private DialogOptions options = new DialogOptions
-    {
-        DisableBackdropClick = true,
-        Position = DialogPosition.Center,
-        CloseButton = false,
-        CloseOnEscapeKey = false,
-        FullWidth = true,
-        MaxWidth = MaxWidth.Medium
-    };
-    
+        {
+            DisableBackdropClick = true,
+            Position = DialogPosition.Center,
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            FullWidth = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
@@ -116,7 +116,16 @@
 
     private async Task OnDelete(TimeBookingDayInfo? item)
     {
-        
-        
+        var result = await DialogService.ShowAsync<DialogDelete>("Achtung!", new DialogParameters(), new DialogOptions
+            {
+                CloseOnEscapeKey = false, DisableBackdropClick = true
+    });
+
+        if ((bool)(await result.Result).Data)
+        {
+            
+        }
+
+
     }
 }
