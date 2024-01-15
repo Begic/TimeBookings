@@ -3,6 +3,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using TimeBooking.Db;
 using TimeBooking.Db.Contracts;
+using TimeBooking.Db.Entities;
 using TimeBooking.Db.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,9 +24,18 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 using (var db = scope.ServiceProvider.GetService<IDbContextFactory<DataBaseContext>>().CreateDbContext())
 {
+    if (!db.Users.Any())
+    {
+        db.Users.Add(new User
+        {
+            FirstName = "John",
+            LastName = "Wick",
+            Birthday = DateTime.Now,
+            Email = "JohnWick@gmail.com"
+        });
+    }
     db.Database.Migrate();
 }
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
