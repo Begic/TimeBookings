@@ -3,6 +3,7 @@
 @inject IDialogService DialogService
 @inject IUserProvider UserProvider
 @inject ITimeBookingProvider TimeBookingProvider
+@inject ITimeBookingDetailProvider TimeBookingDetailProvider
 @inject ISnackbar Toaster
 
 <PageTitle>Übersicht</PageTitle>
@@ -10,18 +11,24 @@
 <LoadingPage IsLoading="@(alluserinfos == null || allTimeBookings == null)">
     <DefaultLayout Title="Übersicht">
         <Actions>
+            
             @if (hasBookingToday)
             {
                 <MudTooltip Text="Buchung hinzufügen">
-                    <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.PlayCircle">Buchung hinzufügen</MudButton>
+                    <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickAddTimeBookingDay" EndIcon="@Icons.Material.Filled.AddCircle">Buchung hinzufügen</MudButton>
                 </MudTooltip>
             }
             else
             {
-                <MudTooltip Text="Ausstempeln">
-                    <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
+                <MudTooltip Text="Einstempeln">
+                    <MudButton Class="me-2" Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickStartTimeBooking" EndIcon="@Icons.Material.Filled.PlayCircle">Einstempeln</MudButton>
                 </MudTooltip>
             }
+
+            <MudTooltip Text="Ausstempeln">
+                <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
+            </MudTooltip>
+
         </Actions>
         <Content>
             <MudDataGrid Items="@allTimeBookings"
@@ -97,20 +104,32 @@
 
     private async Task OnClickAddTimeBookingDay()
     {
-        var result = await DialogService.ShowAsync<DialogBooking>(string.Empty, new DialogParameters
+        await TimeBookingProvider.AddTimeBookingDay(currentUser, new EditTimeBookingDay
         {
-            { nameof(DialogBooking.CurrentUser), currentUser },
-        }, options);
-
-        var ka = await result.Result;
+            BookingDay = DateTime.Today,
+            TimeBookingDetails = new List<EditTimeBookingDetail>
+            {
+                new ()
+                {
+                    StartTime = DateTime.Now
+                }
+            }
+        });
+        Toaster.Add("Erfolgreich gespeichert", Severity.Success);
         await Refresh();
     }
 
+    private async Task OnClickStartTimeBooking()
+    {
+        await TimeBookingDetailProvider.StampIn(currentUser);
+        Toaster.Add("Erfolgreich eingestempelt", Severity.Success);
+        await Refresh();
+    }
+    
     private async Task OnClickEndTimeBooking()
     {
-        await TimeBookingProvider.StampOut();
+        await TimeBookingDetailProvider.StampOut(currentUser);
         Toaster.Add("Erfolgreich ausgestempelt", Severity.Success);
-
         await Refresh();
     }
 
@@ -126,7 +145,7 @@
         await Refresh();
     }
 
-    private async Task OnDelete(TimeBookingDayInfo? item)
+    private async Task OnDelete(TimeBookingDayInfo item)
     {
         var result = await DialogService.ShowAsync<DialogDelete>("Achtung!", new DialogParameters(), new DialogOptions
         {

@@ -89,10 +89,12 @@
         {
             editModel = new EditTimeBookingDay()
             {
+                Id = TimeBookingDay.Id,
                 BookingDay = TimeBookingDay.BookingDay,
                 Remark = TimeBookingDay.Remark,
                 TimeBookingDetails = TimeBookingDay.TimeBookingDetails.Select(x => new EditTimeBookingDetail()
                 {
+                    Id = x.Id,
                     StartTime = x.StartTime,
                     EndTime = x.EndTime,
                     Remark = x.Remark

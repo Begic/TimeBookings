@@ -39,38 +39,34 @@ public class TimeBookingProvider : ITimeBookingProvider
     public async Task AddTimeBookingDay(UserInfo? currentUser, EditTimeBookingDay editModel)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
-        await db.TimeBookingDays.AddAsync(new TimeBookingDay
-        {
-            BookingDay = editModel.BookingDay.Value,
-            UserId = currentUser.Id,
-            Remark = editModel.Remark,
-            TimeBookingDetails = new List<TimeBookingDetail>(new []
-            {
-                new TimeBookingDetail
-                {
-                    StartTime = DateTime.Now
-                }
-            })
-        });
+        var toEdit = await db.TimeBookingDays
+            .Include(x=> x.TimeBookingDetails)
+            .FirstOrDefaultAsync(x => x.Id == editModel.Id);
 
+        if (toEdit == null)
+        {
+            await db.TimeBookingDays.AddAsync( toEdit = new TimeBookingDay());
+        }
+
+        toEdit.BookingDay = editModel.BookingDay.Value;
+        toEdit.UserId = currentUser.Id;
+        toEdit.Remark = editModel.Remark;
+        
+        
+        
         await db.SaveChangesAsync();
     }
-
-    public async Task StampOut()
+    
+    public async Task DeleteTimeBookingDay(int timeBookingId)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
-        var toStampOut = await db.TimeBookingDays
-            .Include(x=> x.TimeBookingDetails)
-            .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
         
+        var doDelete = await db.TimeBookingDays.FirstOrDefaultAsync(x=> x.Id == timeBookingId).ConfigureAwait(false);
+        if (doDelete != null)
+        {
+            db.TimeBookingDays.Remove(doDelete);
+        }
         
-    }
-
-    public async Task DeleteTimeBookingDay(int id)
-    {
-        await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
-        var doDelete = await db.TimeBookingDays.FirstOrDefaultAsync(x=> x.Id == id).ConfigureAwait(false);
-        db.TimeBookingDays.Remove(doDelete);
         await db.SaveChangesAsync();
     }
 }
