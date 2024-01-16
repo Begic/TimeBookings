@@ -1,6 +1,35 @@
-﻿
+﻿@inject ISnackbar Toaster
+
+<EditForm Model="@editModel" OnValidSubmit="@EditStamping">
+    <MudDialog>
+        <TitleContent>
+            <MudText>Stempelung bearbeiten</MudText>
+        </TitleContent>
+        <DialogContent>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
+            <MudButton Color="@Color.Info" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
 
 @code
 {
+    private object editModel;
     
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    
+    private async Task EditStamping()
+    {
+        
+    }
+    
+    private async Task OnClickCancel()
+    {
+        Toaster.Add("Erfolgreich abgebrochen", Severity.Info);
+        MudDialog.Close();
+    }
 }

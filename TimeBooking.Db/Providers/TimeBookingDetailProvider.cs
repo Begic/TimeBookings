@@ -13,12 +13,15 @@ public class TimeBookingDetailProvider : ITimeBookingDetailProvider
         this.factory = factory;
     }
     
-    public async Task StampIn(UserInfo? currentUser, int bookingDayId)
+    public async Task StampIn(UserInfo? currentUser, int? bookingDayId = null)
     {
-        
+        await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
+        var toStampIn = await db.TimeBookingDays
+            .Include(x=> x.TimeBookingDetails)
+            .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
     }
     
-    public async Task StampOut(UserInfo? currentUser, int bookingDayId)
+    public async Task StampOut(UserInfo? currentUser, int? bookingDayId = null)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
         var toStampOut = await db.TimeBookingDays
