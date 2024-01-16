@@ -1,4 +1,5 @@
 ﻿@inject ITimeBookingProvider TimeBookingProvider
+@inject ITimeBookingDetailProvider TimeBookingDetailProvider
 @inject ISnackbar Toaster
 
 <EditForm Model="@editModel" OnValidSubmit="@AddTimeBooking">
@@ -108,6 +109,13 @@
                 BookingDay = DateTime.Today,
             };
         }
+
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        
     }
 
     private async Task AddTimeBooking()
@@ -135,11 +143,15 @@
 
     private async Task OnClickStampIn()
     {
-        
+        await TimeBookingDetailProvider.StampIn(CurrentUser, editModel.Id);
+        Toaster.Add("Erfolgreich eingestempelt", Severity.Success);
+        await Refresh();
     }
     
     private async Task OnClickStampOut()
     {
-        
+        await TimeBookingDetailProvider.StampOut(CurrentUser, editModel.Id);
+        Toaster.Add("Erfolgreich ausgestempelt", Severity.Success);
+        await Refresh();
     }
 }
