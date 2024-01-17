@@ -17,17 +17,28 @@ public class TimeBookingDetailProvider : ITimeBookingDetailProvider
     public async Task StampIn(UserInfo? currentUser, int? bookingDayId = null)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
-        
-        var toStampIn = await db.TimeBookingDays
-            .Include(x => x.TimeBookingDetails)
-            .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
 
-        if (toStampIn != null && toStampIn.TimeBookingDetails != null)
+        if (bookingDayId != null)
         {
-            toStampIn.TimeBookingDetails.Add(new TimeBookingDetail
+            await db.TimeBookingDetails.AddAsync(new TimeBookingDetail
             {
                 StartTime = DateTime.Now,
+                TimeBookingDayId = bookingDayId.Value
             });
+        }
+        else
+        {
+            var toStampIn = await db.TimeBookingDays
+                .Include(x => x.TimeBookingDetails)
+                .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
+
+            if (toStampIn != null && toStampIn.TimeBookingDetails != null)
+            {
+                toStampIn.TimeBookingDetails.Add(new TimeBookingDetail
+                {
+                    StartTime = DateTime.Now,
+                });
+            }
         }
 
         await db.SaveChangesAsync();
@@ -37,17 +48,32 @@ public class TimeBookingDetailProvider : ITimeBookingDetailProvider
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
 
-        var toStampOut = await db.TimeBookingDays
-            .Include(x => x.TimeBookingDetails)
-            .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
-        
-        if (toStampOut != null && toStampOut.TimeBookingDetails != null)
+        if (bookingDayId != null)
         {
-            var toEdit = toStampOut.TimeBookingDetails.FirstOrDefault(x => x.EndTime == null);
-            
-            toEdit.EndTime = DateTime.Now;
-        }
+            var toEdit = await db.TimeBookingDetails.FirstOrDefaultAsync(x => x.TimeBookingDayId == bookingDayId
+                                                                              && x.EndTime == null
+                                                                              && x.TimeBookingDay.BookingDay ==
+                                                                              DateTime.Today);
 
+            if (toEdit != null)
+            {
+                toEdit.EndTime = DateTime.Now;
+            }
+        }
+        else
+        {
+            var toStampOut = await db.TimeBookingDays
+                .Include(x => x.TimeBookingDetails)
+                .FirstOrDefaultAsync(x => x.BookingDay == DateTime.Today);
+
+            if (toStampOut != null && toStampOut.TimeBookingDetails != null)
+            {
+                var toEdit = toStampOut.TimeBookingDetails.FirstOrDefault(x => x.EndTime == null);
+
+                toEdit.EndTime = DateTime.Now;
+            }
+        }
+        
         await db.SaveChangesAsync();
     }
 

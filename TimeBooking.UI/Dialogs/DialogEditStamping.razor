@@ -2,6 +2,7 @@
 @inject ISnackbar Toaster
 
 <EditForm Model="@editModel" OnValidSubmit="@EditStamping">
+    <FluentValidationValidator/>
     <MudDialog>
         <TitleContent>
             <MudText>Stempelung bearbeiten</MudText>
@@ -21,11 +22,10 @@
         </DialogContent>
         <DialogActions>
             <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.Save">Speichern</MudButton>
-            <MudButton Color="@Color.Info" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
+            <MudButton Color="@Color.Warning" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>
-
 
 @code
 {
