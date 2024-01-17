@@ -8,6 +8,6 @@ public class EditTimeBookingDetailValidator : AbstractValidator<EditTimeBookingD
     public EditTimeBookingDetailValidator()
     {
         RuleFor(x => x.StartTime).NotNull().NotEmpty();
-        RuleFor(x => x.EndTime).NotNull().NotEmpty();
+        RuleFor(x => x.EndTime).GreaterThan(x=> x.StartTime).NotNull().NotEmpty();
     }
 }

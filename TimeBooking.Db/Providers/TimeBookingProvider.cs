@@ -30,8 +30,10 @@ public class TimeBookingProvider : ITimeBookingProvider
                     StartTime = y.StartTime,
                     EndTime = y.EndTime,
                     Remark = y.Remark,
-                }).ToList()
-            }).ToListAsync();
+                }).OrderBy(z=> z.StartTime)
+                    .ToList()
+            }).OrderBy(x=> x.BookingDay)
+            .ToListAsync();
 
         return result;
     }
@@ -39,7 +41,6 @@ public class TimeBookingProvider : ITimeBookingProvider
     public async Task AddTimeBookingDay(UserInfo? currentUser, EditTimeBookingDay editModel)
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
-
         var toAdd = await db.TimeBookingDays
             .Include(x=> x.TimeBookingDetails)
             .FirstOrDefaultAsync(x => x.Id == editModel.Id);
@@ -61,11 +62,6 @@ public class TimeBookingProvider : ITimeBookingProvider
         }
 
         toAdd.Remark = editModel.Remark;
-        
-        var stampsInDb = toAdd.TimeBookingDetails.ToList();
-        var stampsInMemory = editModel.TimeBookingDetails.ToList();
-        
-        // TODO
         
         await db.SaveChangesAsync();
     }
@@ -98,7 +94,10 @@ public class TimeBookingProvider : ITimeBookingProvider
                     EndTime = y.EndTime.Value.TimeOfDay,
                     Remark = y.Remark,
                     BookingDate = y.StartTime.Date
-                }).ToList()
-            }).FirstOrDefaultAsync();
+                }).OrderBy(z=> z.StartTime)
+                    .ToList()
+            })
+            .OrderBy(x=> x.BookingDay)
+            .FirstOrDefaultAsync();
     }
 }
