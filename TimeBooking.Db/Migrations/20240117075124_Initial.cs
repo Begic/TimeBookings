@@ -34,7 +34,7 @@ namespace TimeBooking.Db.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookingDay = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Remark = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Remark = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -57,7 +57,7 @@ namespace TimeBooking.Db.Migrations
                     TimeBookingDayId = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Remark = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false)
+                    Remark = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true)
                 },
                 constraints: table =>
                 {

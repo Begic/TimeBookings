@@ -1,5 +1,6 @@
 ﻿@inject ITimeBookingProvider TimeBookingProvider
 @inject ITimeBookingDetailProvider TimeBookingDetailProvider
+@inject IDialogService DialogService
 @inject ISnackbar Toaster
 
 <EditForm Model="@editModel" OnValidSubmit="@AddTimeBooking">
@@ -29,9 +30,11 @@
                     <MudItem md="12">
                         <DefaultLayout>
                             <Actions>
+                            
                                 <MudTooltip Text="Einstempeln">
                                     <MudFab Class="me-2" Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Success" StartIcon="@Icons.Material.Filled.AddCircle" OnClick="@OnClickStampIn">Einstempeln</MudFab>
                                 </MudTooltip>
+                                
                                 <MudTooltip Text="Ausstempeln">
                                     <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Info"  StartIcon="@Icons.Material.Filled.Square" OnClick="@OnClickStampOut">Ausstempeln</MudFab>
                                 </MudTooltip>
@@ -136,9 +139,20 @@
         
     }
 
-    private async Task OnDelete(EditTimeBookingDetail? info)
+    private async Task OnDelete(EditTimeBookingDetail? item)
     {
-        
+        var result = await DialogService.ShowAsync<DialogDelete>("Achtung!", new DialogParameters(), new DialogOptions
+        {
+            CloseOnEscapeKey = false,
+            DisableBackdropClick = true
+        });
+
+        if ((bool)(await result.Result).Data)
+        {
+            await TimeBookingDetailProvider.DeleteTimeStamping(item.Id);
+            Toaster.Add("Erfolgreich gelöscht", Severity.Success);
+            await Refresh();
+        }
     }
 
     private async Task OnClickStampIn()

@@ -12,8 +12,8 @@ using TimeBooking.Db;
 namespace TimeBooking.Db.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20240115131932_NullableRemark")]
-    partial class NullableRemark
+    [Migration("20240117075124_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,6 @@ namespace TimeBooking.Db.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Remark")
-                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
