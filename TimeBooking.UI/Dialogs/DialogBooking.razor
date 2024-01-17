@@ -9,18 +9,15 @@
         <TitleContent>
             @if (TimeBookingDay == null)
             {
-                <MudText>Zeitbuchung hinzufügen</MudText>
+                <MudText>Zeitbuchung vom @editModel.BookingDay?.Date.ToString("d") hinzufügen</MudText>
             }
             else
             {
-                <MudText>Zeitbuchung bearbeiten</MudText>
+                <MudText>Zeitbuchung vom @editModel.BookingDay?.Date.ToString("d") bearbeiten</MudText>
             }
         </TitleContent>
         <DialogContent>
             <MudGrid Class="mb-6">
-                <MudItem md="3">
-                    <MudDatePicker Disabled="@true" Label="Tag" @bind-Date="@editModel.BookingDay"/>
-                </MudItem>
                 <MudItem md="12">
                     <MudTextField Label="Kommentar" @bind-Value="@editModel.Remark" For="@(() => editModel.Remark)" Lines="3"></MudTextField>
                 </MudItem>
@@ -30,14 +27,20 @@
                     <MudItem md="12">
                         <DefaultLayout>
                             <Actions>
-                            
-                                <MudTooltip Text="Einstempeln">
-                                    <MudFab Class="me-2" Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Success" StartIcon="@Icons.Material.Filled.AddCircle" OnClick="@OnClickStampIn">Einstempeln</MudFab>
-                                </MudTooltip>
+                                @if (editModel != null && editModel.TimeBookingDetails.All(x => x.EndTime != null))
+                                {
+                                    <MudTooltip Text="Einstempeln">
+                                        <MudFab Class="me-2" Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Success" StartIcon="@Icons.Material.Filled.AddCircle" OnClick="@OnClickStampIn">Einstempeln</MudFab>
+                                    </MudTooltip>
+                                }
+
+                                @if (editModel != null && editModel.TimeBookingDetails.Any(x => x.EndTime == null))
+                                {
+                                    <MudTooltip Text="Ausstempeln">
+                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Info" StartIcon="@Icons.Material.Filled.Square" OnClick="@OnClickStampOut">Ausstempeln</MudFab>
+                                    </MudTooltip>
+                                }
                                 
-                                <MudTooltip Text="Ausstempeln">
-                                    <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Info"  StartIcon="@Icons.Material.Filled.Square" OnClick="@OnClickStampOut">Ausstempeln</MudFab>
-                                </MudTooltip>
                             </Actions>
                             <Content>
                                 <MudDataGrid Items="@editModel.TimeBookingDetails"
@@ -47,17 +50,25 @@
                                              Hover="@true"
                                              Virtualize="@true">
                                     <Columns>
-                                        <PropertyColumn Title="Start" Property="@(x => x.StartTime)" Format="d"/>
-                                        <PropertyColumn Title="Ende" Property="@(x => x.EndTime)"/>
+                                        <PropertyColumn Title="Start" Property="@(x => x.StartTime)">
+                                            <CellTemplate Context="edit">
+                                                @((edit.Item.BookingDate + edit.Item.StartTime)?.ToString("HH:mm"))
+                                            </CellTemplate>
+                                        </PropertyColumn >
+                                        <PropertyColumn Title="Ende" Property="@(x => x.EndTime)">
+                                            <CellTemplate Context="edit">
+                                                @((edit.Item.BookingDate + edit.Item.EndTime)?.ToString("HH:mm"))
+                                            </CellTemplate>
+                                        </PropertyColumn>
                                         <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)"/>
                                         <TemplateColumn >
                                             <CellTemplate Context="edit">
                                                 <MudStack Row>
                                                     <MudTooltip Text="Bearbeiten">
-                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEditStamping(edit.Item)"/>
+                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => OnClickEditStamping(edit.Item))"/>
                                                     </MudTooltip>
                                                     <MudTooltip Text="Löschen">
-                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(edit.Item)"/>
+                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="@(() => OnDelete(edit.Item))"/>
                                                     </MudTooltip>
                                                 </MudStack>
                                             </CellTemplate>
@@ -95,7 +106,7 @@
         FullWidth = true,
         MaxWidth = MaxWidth.Medium
     };
-    
+
     protected override async Task OnInitializedAsync()
     {
         if (TimeBookingDay != null)
@@ -125,12 +136,13 @@
 
         await Refresh();
     }
-    
+
     private async Task Refresh()
     {
         
+        StateHasChanged();
     }
-    
+
     private async Task AddTimeBooking()
     {
         await TimeBookingProvider.AddTimeBookingDay(CurrentUser, editModel);
@@ -142,6 +154,20 @@
     {
         Toaster.Add("Erfolgreich abgebrochen", Severity.Info);
         MudDialog.Close();
+    }
+
+    private async Task OnClickStampIn()
+    {
+        await TimeBookingDetailProvider.StampIn(CurrentUser, editModel.Id);
+        Toaster.Add("Erfolgreich eingestempelt", Severity.Success);
+        await Refresh();
+    }
+
+    private async Task OnClickStampOut()
+    {
+        await TimeBookingDetailProvider.StampOut(CurrentUser, editModel.Id);
+        Toaster.Add("Erfolgreich ausgestempelt", Severity.Success);
+        await Refresh();
     }
 
     private async Task OnClickEditStamping(EditTimeBookingDetail? info)
@@ -169,19 +195,5 @@
             Toaster.Add("Erfolgreich gelöscht", Severity.Success);
             await Refresh();
         }
-    }
-
-    private async Task OnClickStampIn()
-    {
-        await TimeBookingDetailProvider.StampIn(CurrentUser, editModel.Id);
-        Toaster.Add("Erfolgreich eingestempelt", Severity.Success);
-        await Refresh();
-    }
-    
-    private async Task OnClickStampOut()
-    {
-        await TimeBookingDetailProvider.StampOut(CurrentUser, editModel.Id);
-        Toaster.Add("Erfolgreich ausgestempelt", Severity.Success);
-        await Refresh();
     }
 }

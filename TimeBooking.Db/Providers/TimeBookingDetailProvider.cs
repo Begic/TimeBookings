@@ -71,7 +71,7 @@ public class TimeBookingDetailProvider : ITimeBookingDetailProvider
 
         if (toEdit != null)
         {
-            toEdit.StartTime = editModel.BookingDate + editModel.StartTime;
+            toEdit.StartTime = editModel.BookingDate + editModel.StartTime.Value;
             toEdit.EndTime = editModel.BookingDate + editModel.EndTime;
             toEdit.Remark = editModel.Remark;
         }

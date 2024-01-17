@@ -9,10 +9,10 @@
         <DialogContent>
             <MudGrid>
                 <MudItem md="6">
-                    <MudTimePicker Label="Start" @bind-Time="@editModel.StartTime"/>
+                    <MudTimePicker Label="Start" @bind-Time="@editModel.StartTime" For="@(() => editModel.StartTime)"/>
                 </MudItem>
                 <MudItem md="6">
-                    <MudTimePicker Label="Stop" @bind-Time="@editModel.EndTime"/>
+                    <MudTimePicker Label="Stop" @bind-Time="@editModel.EndTime" For="@(() => editModel.EndTime)"/>
                 </MudItem>
                 <MudItem md="12">
                     <MudTextField Label="Kommentar" @bind-Value="@editModel.Remark" For="@(() => editModel.Remark)" Lines="3"></MudTextField>

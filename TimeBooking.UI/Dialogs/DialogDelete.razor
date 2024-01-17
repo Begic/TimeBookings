@@ -2,14 +2,14 @@
 
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.subtitle1">Sind Sie sicher das Sie diesen Datensatz löschen wollen?</MudText>
+        <MudText Typo="@Typo.subtitle1">Sind Sie sicher das Sie diesen Datensatz löschen wollen?</MudText>
     </DialogContent>
     <DialogActions>
         <MudTooltip Text="NEIN">
-            <MudButton Color="Color.Error" ButtonType="ButtonType.Button" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">NEIN</MudButton>
+            <MudButton Color="@Color.Error" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">NEIN</MudButton>
         </MudTooltip>
         <MudTooltip Text="JA">
-            <MudButton Color="Color.Success" ButtonType="ButtonType.Button" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Check" OnClick="OnClickOk">JA</MudButton>
+            <MudButton Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" EndIcon="@Icons.Material.Filled.Check" OnClick="@OnClickOk">JA</MudButton>
         </MudTooltip>
     </DialogActions>
 </MudDialog>
@@ -18,13 +18,13 @@
 {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    private async Task OnClickOk()
+    private void OnClickOk()
     {
         MudDialog.Close(true);
         Toaster.Add("Erfolgreich gelöscht", MudBlazor.Severity.Success);
     }
 
-    private async Task OnClickCancel()
+    private void OnClickCancel()
     {
         MudDialog.Close(false);
         Toaster.Add("Abgebrochen", MudBlazor.Severity.Error);
