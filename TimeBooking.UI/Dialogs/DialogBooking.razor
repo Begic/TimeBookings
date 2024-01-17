@@ -54,7 +54,7 @@
                                             <CellTemplate Context="edit">
                                                 <MudStack Row>
                                                     <MudTooltip Text="Bearbeiten">
-                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEdit(edit.Item)"/>
+                                                        <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => OnClickEditStamping(edit.Item)"/>
                                                     </MudTooltip>
                                                     <MudTooltip Text="Löschen">
                                                         <MudFab Size="@Size.Small" IconSize="@Size.Small" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => OnDelete(edit.Item)"/>
@@ -72,21 +72,30 @@
 
         </DialogContent>
         <DialogActions>
-            <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.AddCircle">Hinzufügen</MudButton>
-            <MudButton Color="@Color.Info" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
+            <MudButton Color="@Color.Success" Variant="@Variant.Filled" ButtonType="@ButtonType.Submit" EndIcon="@Icons.Material.Filled.Save">Hinzufügen</MudButton>
+            <MudButton Color="@Color.Warning" Variant="@Variant.Filled" ButtonType="@ButtonType.Button" EndIcon="@Icons.Material.Filled.Cancel" OnClick="@OnClickCancel">Abbrechen</MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>
 
 @code
 {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public UserInfo CurrentUser { get; set; }
     [Parameter] public TimeBookingDayInfo? TimeBookingDay { get; set; }
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
     private EditTimeBookingDay editModel = new();
 
+    private DialogOptions options = new DialogOptions
+    {
+        DisableBackdropClick = true,
+        Position = DialogPosition.Center,
+        CloseButton = false,
+        CloseOnEscapeKey = false,
+        FullWidth = true,
+        MaxWidth = MaxWidth.Medium
+    };
+    
     protected override async Task OnInitializedAsync()
     {
         if (TimeBookingDay != null)
@@ -99,8 +108,9 @@
                 TimeBookingDetails = TimeBookingDay.TimeBookingDetails.Select(x => new EditTimeBookingDetail()
                 {
                     Id = x.Id,
-                    StartTime = x.StartTime,
-                    EndTime = x.EndTime,
+                    BookingDate = x.StartTime.Date,
+                    StartTime = x.StartTime.TimeOfDay,
+                    EndTime = x.EndTime?.TimeOfDay,
                     Remark = x.Remark
                 }).ToList()
             };
@@ -115,28 +125,34 @@
 
         await Refresh();
     }
-
+    
     private async Task Refresh()
     {
         
     }
-
+    
     private async Task AddTimeBooking()
     {
         await TimeBookingProvider.AddTimeBookingDay(CurrentUser, editModel);
-        Toaster.Add("Erfolgreich hinzugefügt", Severity.Success);
+        Toaster.Add("Erfolgreich gespeichert", Severity.Success);
         MudDialog.Close(true);
     }
 
-    private async Task OnClickCancel()
+    private void OnClickCancel()
     {
         Toaster.Add("Erfolgreich abgebrochen", Severity.Info);
         MudDialog.Close();
     }
 
-    private async Task OnClickEdit(EditTimeBookingDetail? info)
+    private async Task OnClickEditStamping(EditTimeBookingDetail? info)
     {
-        
+        var result = await DialogService.ShowAsync<DialogEditStamping>(string.Empty, new DialogParameters
+        {
+            { nameof(DialogEditStamping.EditTimeBookingDetail), info },
+        }, options);
+
+        var ka = await result.Result;
+        await Refresh();
     }
 
     private async Task OnDelete(EditTimeBookingDetail? item)

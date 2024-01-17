@@ -19,14 +19,14 @@
                 </MudTooltip>
             }
 
-            @if (bookingFromToday != null && bookingFromToday.TimeBookingDetails.All(x => x.EndTime == null))
+            @if (bookingFromToday != null && bookingFromToday.TimeBookingDetails.All(x => x.EndTime != null))
             {
                 <MudTooltip Text="Einstempeln">
                     <MudButton Class="me-2" Color="@Color.Success" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickStartTimeBooking" EndIcon="@Icons.Material.Filled.PlayCircle">Einstempeln</MudButton>
                 </MudTooltip>
             }
 
-            @if (bookingFromToday != null && bookingFromToday.TimeBookingDetails.Any(x => x.EndTime != null))
+            @if (bookingFromToday != null && bookingFromToday.TimeBookingDetails.Any(x => x.EndTime == null))
             {
                 <MudTooltip Text="Ausstempeln">
                     <MudButton Color="@Color.Info" ButtonType="@ButtonType.Button" Variant="@Variant.Filled" OnClick="@OnClickEndTimeBooking" EndIcon="@Icons.Material.Filled.Square">Ausstempeln</MudButton>
@@ -114,11 +114,11 @@
             {
                 new()
                 {
-                    StartTime = DateTime.Now
+                    StartTime = DateTime.Now.TimeOfDay
                 }
             }
         });
-        Toaster.Add("Erfolgreich gespeichert", Severity.Success);
+        Toaster.Add("Erfolgreich hinzugefügt", Severity.Success);
         await Refresh();
     }
 

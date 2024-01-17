@@ -63,4 +63,19 @@ public class TimeBookingDetailProvider : ITimeBookingDetailProvider
 
         await db.SaveChangesAsync();
     }
+
+    public async Task EditTimeStamping(EditTimeBookingDetail editModel)
+    {
+        await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
+        var toEdit = await db.TimeBookingDetails.FirstOrDefaultAsync(x => x.Id == editModel.Id);
+
+        if (toEdit != null)
+        {
+            toEdit.StartTime = editModel.BookingDate + editModel.StartTime;
+            toEdit.EndTime = editModel.BookingDate + editModel.EndTime;
+            toEdit.Remark = editModel.Remark;
+        }
+
+        await db.SaveChangesAsync();
+    }
 }
