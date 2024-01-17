@@ -40,19 +40,33 @@ public class TimeBookingProvider : ITimeBookingProvider
     {
         await using var db = await factory.CreateDbContextAsync().ConfigureAwait(false);
 
-        await db.TimeBookingDays.AddAsync(new TimeBookingDay
-        {
-            BookingDay = DateTime.Today,
-            UserId = currentUser.Id,
-            TimeBookingDetails = new List<TimeBookingDetail>(new[]
-            {
-                new TimeBookingDetail
-                {
-                    StartTime = DateTime.Now
-                }
-            })
-        });
+        var toAdd = await db.TimeBookingDays
+            .Include(x=> x.TimeBookingDetails)
+            .FirstOrDefaultAsync(x => x.Id == editModel.Id);
 
+        if (toAdd == null)
+        {
+            await db.TimeBookingDays.AddAsync(toAdd = new TimeBookingDay
+            {
+                BookingDay = DateTime.Today,
+                UserId = currentUser.Id,
+                TimeBookingDetails = new List<TimeBookingDetail>(new[]
+                {
+                    new TimeBookingDetail
+                    {
+                        StartTime = DateTime.Now
+                    }
+                })
+            });
+        }
+
+        toAdd.Remark = editModel.Remark;
+        
+        var stampsInDb = toAdd.TimeBookingDetails.ToList();
+        var stampsInMemory = editModel.TimeBookingDetails.ToList();
+        
+        // TODO
+        
         await db.SaveChangesAsync();
     }
 
