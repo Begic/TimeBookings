@@ -43,6 +43,7 @@
                 <Columns>
                     <PropertyColumn Title="Tag" Property="@(x => x.BookingDay)" Format="d"/>
                     <PropertyColumn Title="Kommentar" Property="@(x => x.Remark)"/>
+                    <PropertyColumn Title="Anzahl der Buchungen" Property="@(x => x.TimeBookingDetails.Count())"/>
                     <TemplateColumn>
                         <CellTemplate>
                             <MudStack Row>
